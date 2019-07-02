@@ -6,11 +6,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+
 public class BootApplication {
 
 
     public static void main(String[] args) {
-        RobotService.test();
+//        RobotService.test();
         SpringApplication.run(BootApplication.class, args);
     }
 
