@@ -5,51 +5,44 @@ import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiRobotSendRequest;
 import com.dingtalk.api.response.OapiRobotSendResponse;
 import com.taobao.api.ApiException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.util.Arrays;
 @Service
 
 public class RobotService {
+    @Value("${WEB_HOOK}")
+    public String webhook;
+    @Value("${ASSIGNEE}")
+    public String assignee;
 
-   public  void  test(){
-       DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/robot/send?access_token=eb0b9469bf0943675c901da66c4e4d307b05e8d7ad6528a764dfef751430976f");
-       OapiRobotSendRequest request = new OapiRobotSendRequest();
-//       request.setMsgtype("text");
-//       OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
-//       text.setContent("测试文本消息");
-//       request.setText(text);
-//       OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
-//       at.setAtMobiles(Arrays.asList("15621002257"));
-//       request.setAt(at);
+    public  void  mergeRequest(String source,String target,String url){
 
-//       request.setMsgtype("link");
-//       OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
-//       link.setMessageUrl("https://www.dingtalk.com/");
-//       link.setPicUrl("");
-//       link.setTitle("时代的火车向前开");
-//       link.setText("这个即将发布的新版本，创始人陈航（花名“无招”）称它为“红树林”。\n" +
-//               "而在此之前，每当面临重大升级，产品经理们都会取一个应景的代号，这一次，为什么是“红树林");
-//       request.setLink(link);
+        DingTalkClient client = new DefaultDingTalkClient(webhook);
 
-       request.setMsgtype("markdown");
-       OapiRobotSendRequest.Markdown markdown = new OapiRobotSendRequest.Markdown();
-       markdown.setTitle("杭州天气");
-       markdown.setText("#### 杭州天气 @15621002257\n" +
-               "> 9度，西北风1级，空气良89，相对温度73%\n\n" +
-               "> ![screenshot](https://gw.alipayobjects.com/zos/skylark-tools/public/files/84111bbeba74743d2771ed4f062d1f25.png)\n"  +
-               "> ###### 10点20分发布 [天气](http://www.thinkpage.cn/) \n");
-       request.setMarkdown(markdown);
-       OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
-       at.setAtMobiles(Arrays.asList("15621002257"));
-       request.setAt(at);
+        OapiRobotSendRequest request = new OapiRobotSendRequest();
 
 
-       try{
-           OapiRobotSendResponse response = client.execute(request);
-       }
-       catch (ApiException exception){
+        request.setMsgtype("markdown");
+        OapiRobotSendRequest.Markdown markdown = new OapiRobotSendRequest.Markdown();
+        markdown.setTitle("Gitlab合并请求");
+        markdown.setText("#### Gitlab合并请求 @"+assignee+"\n" +
+                "> 目标分支："+ target+"\n\n" +
+                "> 源分支："+ source+"\n\n"  +
+                "> [合并请求地址](" +url+ ")\n");
+        request.setMarkdown(markdown);
+        OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
+        at.setAtMobiles(Arrays.asList(assignee));
+        request.setAt(at);
 
-       }
 
-   }
+        try{
+            OapiRobotSendResponse response = client.execute(request);
+        }
+        catch (ApiException exception){
+
+        }
+
+    }
 }
